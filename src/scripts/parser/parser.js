@@ -5,10 +5,20 @@ import { convertFontWeight, convertLineHeight, convertFontSize } from './text';
 import { convertBorderRadius } from './border';
 import { convertDimensions } from './dimensions';
 
+/**
+ * 
+ * @param {*} property 
+ * @param {*} value 
+ * @param {*} tailWindStyles 
+ * @param {*} pseudoEle 
+ * @param {*} errors 
+ * @param {*} settings 
+ */
 export const convertCss = (
     property,
     value,
     tailWindStyles,
+    pseudoEle,
     errors,
     settings
 ) => {
@@ -20,6 +30,9 @@ export const convertCss = (
         errors,
         settings
     );
+
+    let processedPseudoElement = processPseudoElement(pseudoEle)
+
     console.log(processedProperty, processedValue);
 
     if (
@@ -27,12 +40,22 @@ export const convertCss = (
         TailWindMap[processedProperty][processedValue]
     ) {
         tailWindStyles.push(
-            `${TailWindMap[processedProperty][processedValue].substring(1)}`
+            `${processedPseudoElement}${TailWindMap[processedProperty][processedValue].substring(1)}`
         );
     } else {
         errors.push(`${property}: ${value};`);
     }
 };
+
+const processPseudoElement = (pseudoEle) => {
+    for (let key in pseudoEle) {
+        if (pseudoEle[key]) {
+            return key + ':'
+        }
+    }
+
+    return ''
+}
 
 const processProperty = (property, value) => {
     switch (property) {

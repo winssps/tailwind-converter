@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { langs } from '@uiw/codemirror-extensions-langs';
 import parseCSS from 'css-rules';
+import { compileString } from 'sass';
 import { css } from 'js-beautify';
 import CSSLint from 'csslint';
 import _ from 'lodash';
@@ -13,39 +14,51 @@ if (typeof window !== `undefined`) {
 
 const initialEditorOptions = {
     value: `/* PASTE CSS HERE */
-
-example1 {
-  height: 5px;
-  width: 10px;
-  background: gray;
-  border-width: 1px;
-  border-radius: 3px;
-  /* Complex/Shorthand styles Not supported*/
-  padding: 5px 10px;
-}
-
-example2 {
-  position: absolute;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}`,
+    .title{
+        position: relative;
+        padding: 16px 24px;
+        font-size: 16px;
+        color: #808080;
+        &::before{
+          // position: relative;
+          content: '';
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          margin-right: 6px;
+          border-radius: 50%;
+          background-color: #536DFE;
+        }
+        .close{
+          position: absolute;
+          right: 24px;
+          top: 14px;
+          font-size: 16px;
+          padding: 4px;
+          cursor: pointer;
+        }
+      }`,
     data: {},
     editor: {},
 };
 
-const debouncedUpdateTree = _.debounce(
-    (setCssTree, parse, value, setEditorErrors, errors) => {
-        setCssTree(parse(value));
-        setEditorErrors(errors);
-        console.log(errors);
-    },
-    500
-);
-
 const Editor = ({ setCssTree, setEditorErrors }) => {
     const [editorState, setEditorState] = useState(initialEditorOptions);
+    const [cssLanguage, setCssLanguage] = useState('css');
+
+    const debouncedUpdateTree = _.debounce(
+        (setCssTree, parse, value, setEditorErrors, errors) => {
+            if (cssLanguage === 'css') {
+                setCssTree(parse(value));
+            } else if (cssLanguage === 'sass') {
+                setCssTree(parse(compileString(value).css))
+            }
+            setEditorErrors(errors);
+            console.log(errors);
+        },
+        500
+    );
+
     const tidy = () => {
         try {
             setEditorState(() => {
@@ -68,12 +81,26 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
         }
     };
 
+    const switchCssLanguage = (e) => {
+        setCssLanguage(e.target.value)
+    }
+
+    useEffect(() => {
+        debouncedUpdateTree(
+            setCssTree,
+            parse,
+            editorState.value,
+            setEditorErrors,
+            false
+        );
+    }, [cssLanguage])
+
     return (
         <div className="relative h-full w-5/12">
             <div className='absolute top-1 right-12 z-10'>
-                <select className='w-20'>
+                <select className='w-20' onChange={switchCssLanguage}>
                     <option value="css">css</option>
-                    <option value="scss">scss</option>
+                    <option value="sass">sass</option>
                     <option value="less">less</option>
                 </select>
             </div>
@@ -112,7 +139,7 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
                         gutters: ['CodeMirror-lint-markers'],
                         lint: true,
                     }}
-                    extensions={[langs.css()]}
+                    extensions={[langs[cssLanguage]()]}
                     // onBeforeChange={(editor, data, value) => {
                     //     setEditorState({ editor, data, value });
                     // }}
@@ -138,12 +165,22 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
                         // setCssTree(parse(value));
                         // setEditorErrors(editor.state.lint.marked.length > 0);
                         // console.log(editor, data, parse(value));
+
+                        setEditorState(() => {
+                            return {
+                                ...editorState,
+                                value: value,
+                            };
+                        });
+
                     }}
                     onUpdate={() => {
                         console.log('update')
                     }}
                     onCreateEditor={() => {
                         console.log('onCreateEditor')
+
+
 
                         debouncedUpdateTree(
                             setCssTree,

@@ -4,14 +4,23 @@ import { convertCss } from '../scripts/parser/parser';
 import TailwindBlock from './tailwind-block';
 
 const Output = ({ settings, cssTree, editorErrors }) => {
-    const parseStyleTree = (styleTree, selector) => {
+    const parseStyleTree = (selector, styleTree) => {
         let tailWindStyles = [];
         const errors = [];
         const isHover = selector.indexOf(':hover') !== -1;
+        const isBefore = selector.indexOf(':before') !== -1;
+
+        console.log(isBefore, selector)
+
+        const pseudoEle = {
+            before: isBefore,
+            hover: isHover,
+        }
+
         for (let i = 0; i < styleTree.length; i++) {
             const property = styleTree[i];
             const value = styleTree[property];
-            convertCss(property, value, tailWindStyles, errors, settings);
+            convertCss(property, value, tailWindStyles, pseudoEle,  errors, settings);
         }
         if(settings.classPrefix !== ''){
             tailWindStyles = tailWindStyles.map(element => {
@@ -51,8 +60,8 @@ const Output = ({ settings, cssTree, editorErrors }) => {
                 cssTree.length !== 0 &&
                 cssTree.map(([selector, styleTree]) => {
                     const [tailWindStyles, errors] = parseStyleTree(
-                        styleTree,
-                        selector
+                        selector,
+                        styleTree
                     );
 
                     return (
