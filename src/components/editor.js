@@ -1,17 +1,10 @@
-// https://github.com/scniro/react-codemirror2/issues/83
-import React, { useState, useEffect } from 'react';
-import { Controlled as CodeMirror } from 'react-codemirror2';
-import 'codemirror/addon/edit/matchbrackets';
-import 'codemirror/addon/edit/closebrackets';
-import 'codemirror/addon/comment/comment';
-import 'codemirror/addon/lint/lint.css';
-import 'codemirror/addon/search/match-highlighter';
+import React, { useState } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { vscodeDark } from '@uiw/codemirror-theme-vscode';
+import { langs } from '@uiw/codemirror-extensions-langs';
 import parseCSS from 'css-rules';
 import { css } from 'js-beautify';
 import CSSLint from 'csslint';
-import 'codemirror/mode/css/css';
-import 'codemirror/addon/lint/lint';
-import 'codemirror/addon/lint/css-lint.js';
 import _ from 'lodash';
 
 if (typeof window !== `undefined`) {
@@ -61,21 +54,22 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
                     value: css(editorState.value),
                 };
             });
+
+            console.log(css(editorState.value))
         } catch (e) {
             console.log('error formatting', e);
         }
     };
     const parse = (cssString) => {
         try {
-            const parsedVal = parseCSS(cssString);
-            return parsedVal;
+            return parseCSS(cssString);
         } catch (e) {
             console.error('error parsing CSS', e);
         }
     };
 
     return (
-        <div className="relative h-full w-4/12">
+        <div className="relative h-full w-5/12">
             <div
                 className="absolute top-0 right-0 m-2 z-10 cursor-pointer text-gray-500 hover:text-gray-100"
                 onClick={() => {
@@ -97,9 +91,11 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
                     <path d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </div>
-            {typeof window !== 'undefined' && window.navigator && (
+            {typeof window !== 'undefined' && window?.navigator && (
                 <CodeMirror
                     value={editorState.value}
+                    height="1200px"
+                    theme={vscodeDark}
                     options={{
                         mode: 'css',
                         theme: 'material',
@@ -109,34 +105,46 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
                         gutters: ['CodeMirror-lint-markers'],
                         lint: true,
                     }}
-                    onBeforeChange={(editor, data, value) => {
-                        setEditorState({ editor, data, value });
-                    }}
-                    editorDidMount={(editor, [next]) => {
-                        debouncedUpdateTree(
-                            setCssTree,
-                            parse,
-                            initialEditorOptions.value,
-                            setEditorErrors,
-                            editor.state.lint.marked.length > 0
-                        );
-                    }}
-                    onChange={(editor, data, value) => {
-                        console.log(
-                            editor.state.lint,
-                            editor.state.lint.marked,
-                            editor.state.lint.marked.length
-                        );
+                    extensions={[langs.css()]}
+                    // onBeforeChange={(editor, data, value) => {
+                    //     setEditorState({ editor, data, value });
+                    // }}
+                    // editorDidMount={(editor, [next]) => {
+                    //     debouncedUpdateTree(
+                    //         setCssTree,
+                    //         parse,
+                    //         initialEditorOptions.value,
+                    //         setEditorErrors,
+                    //         editor.state.lint.marked.length > 0
+                    //     );
+                    // }}
+                    onChange={(value, editor) => {
+                        console.log(value, editor)
+                
                         debouncedUpdateTree(
                             setCssTree,
                             parse,
                             value,
                             setEditorErrors,
-                            editor.state.lint.marked.length > 0
+                            false
                         );
                         // setCssTree(parse(value));
                         // setEditorErrors(editor.state.lint.marked.length > 0);
                         // console.log(editor, data, parse(value));
+                    }}
+                    onUpdate={() => {
+                        console.log('update')
+                    }}
+                    onCreateEditor={() => {
+                        console.log('onCreateEditor')
+
+                        debouncedUpdateTree(
+                            setCssTree,
+                            parse,
+                            editorState.value,
+                            setEditorErrors,
+                            false
+                        );
                     }}
                 />
             )}
