@@ -70,6 +70,13 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
 
     return (
         <div className="relative h-full w-5/12">
+            <div className='absolute top-1 right-12 z-10'>
+                <select className='w-20'>
+                    <option value="css">css</option>
+                    <option value="scss">scss</option>
+                    <option value="less">less</option>
+                </select>
+            </div>
             <div
                 className="absolute top-0 right-0 m-2 z-10 cursor-pointer text-gray-500 hover:text-gray-100"
                 onClick={() => {
