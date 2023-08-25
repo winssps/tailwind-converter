@@ -1,11 +1,11 @@
 <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
 <p align="center" style="margin-bottom: 0px">
-       <a href="https://tailwind-converter.netlify.app/" alt="TailWindConverter">
+       <a href="https://winssps.github.io/tailwind-converter/" alt="TailWindConverter">
        <img src="https://i.imgur.com/AHEcNqy.png" width=64/>
   </a>
 </p>
        <h1 align="center">
-              <a href="https://tailwind-converter.netlify.app/" alt="TailWindConverter">
+              <a href="https://winssps.github.io/tailwind-converter/" alt="TailWindConverter">
                      TailWind Converter
               </a>
        </h1>
