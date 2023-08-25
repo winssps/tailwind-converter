@@ -175,13 +175,10 @@ const Editor = ({ setCssTree, setEditorErrors }) => {
 
                     }}
                     onUpdate={() => {
-                        console.log('update')
+                        // console.log('update')
                     }}
                     onCreateEditor={() => {
                         console.log('onCreateEditor')
-
-
-
                         debouncedUpdateTree(
                             setCssTree,
                             parse,

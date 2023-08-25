@@ -4,6 +4,7 @@ import { convertSpacing } from './spacing';
 import { convertFontWeight, convertLineHeight, convertFontSize } from './text';
 import { convertBorderRadius } from './border';
 import { convertDimensions } from './dimensions';
+// import { convertPseudoElement } from './pseudoElement'
 
 /**
  * 
