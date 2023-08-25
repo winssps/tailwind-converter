@@ -171,6 +171,9 @@ export default {
         'flex-end': '.content-end',
         'space-between': '.content-between',
         'space-around': '.content-around',
+        baseline: '.content-baseline',
+        'space-evenly': '.content-evenly',
+        stretch: '.content-stretch'
     },
     'align-self': {
         auto: '.self-auto',
@@ -185,6 +188,22 @@ export default {
         'flex-end': '.justify-end',
         'space-between': '.justify-between',
         'space-around': '.justify-around',
+        normal: '.justify-normal',
+        evenly: '.justify-evenly',
+        stretch: '.justify-stretch'
+    },
+    'justify-items': {
+        start: '.justify-items-start',
+        center: '.justify-items-center',
+        end: '.justify-items-end',
+        stretch: '.justify-items-stretch',
+    },
+    'justify-self': {
+        start: '.justify-self-start',
+        center: '.justify-self-center',
+        end: '.justify-self-end',
+        stretch: '.justify-self-stretch',
+        auto: '.justify-self-auto'
     },
     flex: {
         '01auto': '.flex-initial',
